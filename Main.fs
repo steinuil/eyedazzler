@@ -14,15 +14,20 @@ let pixels nx ny =
     }
 
 
+let vectorToColor (vec : Vector3) =
+    Color.FromArgb
+        (255,
+         int (255.99f * vec.X),
+         int (255.99f * vec.Y),
+         int (255.99f * vec.Z))
+
+
 let gradient nx ny =
     seq {
         for i, j in pixels nx ny do
             let color =
-                Color.FromArgb
-                    (255,
-                     int (255.99f * (float32 i / float32 nx)),
-                     int (255.99f * (float32 j / float32 ny)),
-                     int (255.99f * 0.2f))
+                Vector3 (float32 i / float32 nx, float32 j / float32 ny, 0.2f)
+                |> vectorToColor
             yield (i, ny - 1 - j, color)
     }
 
@@ -67,13 +72,7 @@ let simpleCamera nx ny =
             let r : Ray =
                 { origin = origin;
                   direction = lowerLeft + (u * horizontal) + (v * vertical) }
-            let col = color r
-
-            let color = Color.FromArgb
-                            (255,
-                             int (255.99f * col.X),
-                             int (255.99f * col.Y),
-                             int (255.99f * col.Z))
+            let color = color r |> vectorToColor
             yield (i, ny - 1 - j, color)
     }
 
