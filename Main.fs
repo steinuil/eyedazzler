@@ -31,19 +31,24 @@ let unitVector (vec : Vector3) =
     vec / vec.Length ()
 
 
-let hitsSphere (center : Vector3) (radius : float32) (ray : Ray) =
+let hitSphere (center : Vector3) (radius : float32) (ray : Ray) =
     let oc = ray.origin - center
     let a = Vector3.Dot (ray.direction, ray.direction)
     let b = 2.f * Vector3.Dot (oc, ray.direction)
     let c = Vector3.Dot (oc, oc) - radius * radius
     let discriminant = b * b - 4.f * a * c
-    discriminant > 0.f
-
-
-let color (r: Ray) =
-    if hitsSphere (Vector3 (0.0f, 0.0f, -1.f)) 0.5f r then
-        Vector3 (1.f, 0.f, 0.f)
+    if discriminant < 0.f then
+        None
     else
+        Some ((-b - sqrt discriminant) / (2.f * a))
+
+
+let color (r : Ray) =
+    match hitSphere (Vector3 (0.0f, 0.0f, -1.f)) 0.5f r with
+    | Some hit ->
+        let n = unitVector ((Ray.pointAt hit r) - Vector3 (0.f, 0.f, -1.f))
+        0.5f * Vector3 (n.X + 1.f, n.Y + 1.f, n.Z + 1.f)
+    | None ->
         let unitDir = unitVector r.direction
         let t = 0.5f * (unitDir.Y + 1.0f)
         (1.0f - t) * Vector3 (1.0f, 1.0f, 1.0f) + t * Vector3 (0.5f, 0.7f, 1.0f)
@@ -78,9 +83,9 @@ let simpleCamera nx ny =
 let main args =
     Application.EnableVisualStyles ()
 
-    use form = new Form (Width = 400, Height = 200, Text = "Eyedazzler")
+    let nx, ny = 800, 400
 
-    let nx, ny = 400, 200
+    use form = new Form (Width = nx, Height = ny, Text = "Eyedazzler")
 
     use img = new Bitmap (nx, ny)
 
