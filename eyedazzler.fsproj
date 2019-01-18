@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Ray.fs" />
+    <Compile Include="Hittable.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>
