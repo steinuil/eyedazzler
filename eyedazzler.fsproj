@@ -4,8 +4,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Vec2.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="Hittable.fs" />
+    <Compile Include="Sphere.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

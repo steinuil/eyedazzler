@@ -7,5 +7,12 @@ type Ray =
       direction : Vector3 }
 
 module Ray =
+    /// Make ray with unit length direction
+    let make origin (direction : Vector3) =
+        let unitDir = direction / direction.Length ()
+        { origin = origin
+          direction = unitDir }
+
+    /// Get the point at position <c>t</c> along the ray
     let pointAt (t : float32) ray =
         ray.origin + t * ray.direction

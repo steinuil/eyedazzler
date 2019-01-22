@@ -6,6 +6,7 @@ open System.Windows.Forms
 open Ray
 
 
+/// Yields coordinates from (0, ny) to (nx, 0)
 let pixels nx ny =
     seq {
         for j = ny - 1 downto 0 do
@@ -14,7 +15,7 @@ let pixels nx ny =
     }
 
 
-let vectorToColor (vec : Vector3) =
+let vector3ToColor (vec : Vector3) =
     Color.FromArgb
         (255,
          int (255.99f * vec.X),
@@ -27,7 +28,7 @@ let gradient nx ny =
         for i, j in pixels nx ny do
             let color =
                 Vector3 (float32 i / float32 nx, float32 j / float32 ny, 0.2f)
-                |> vectorToColor
+                |> vector3ToColor
             yield (i, ny - 1 - j, color)
     }
 
@@ -72,7 +73,7 @@ let simpleCamera nx ny =
             let r : Ray =
                 { origin = origin;
                   direction = lowerLeft + (u * horizontal) + (v * vertical) }
-            let color = color r |> vectorToColor
+            let color = color r |> vector3ToColor
             yield (i, ny - 1 - j, color)
     }
 
