@@ -38,9 +38,9 @@ let color (r : Ray) =
         let n = unitVector ((Ray.pointAt hit r) - Vector3 (0.f, 0.f, -1.f))
         0.5f * Vector3 (n.X + 1.f, n.Y + 1.f, n.Z + 1.f)
     | None ->
-        let unitDir = unitVector r.direction
-        let t = 0.5f * (unitDir.Y + 1.0f)
-        (1.0f - t) * Vector3 (1.0f, 1.0f, 1.0f) + t * Vector3 (0.5f, 0.7f, 1.0f)
+        let unitDir = unitVector r.direction    // scale vector to -1..1
+        let t = 0.5f * (unitDir.Y + 1.0f)       // scale Y to 0..1
+        Vector3.Lerp (Vector3 (1.0f, 1.0f, 1.0f), Vector3 (0.5f, 0.7f, 1.0f), t)
 
 
 let simpleCamera nx ny =
@@ -50,14 +50,14 @@ let simpleCamera nx ny =
     let origin = Vector3 (0.0f, 0.0f, 0.0f)
 
     seq {
-        for i, j in Render.pixels nx ny do
-            let u = float32 i / float32 nx
-            let v = float32 j / float32 ny
+        for x, y in Render.pixels nx ny do
+            let u = float32 x / float32 nx
+            let v = float32 y / float32 ny
             let r : Ray =
                 { origin = origin;
                   direction = lowerLeft + (u * horizontal) + (v * vertical) }
             let color = color r |> Render.vec3ToColor
-            yield (i, ny - 1 - j, color)
+            yield (x, ny - 1 - y, color)
     }
 
 
