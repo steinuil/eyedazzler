@@ -6,6 +6,7 @@ open System.Windows.Forms
 open Ray
 open Sphere
 open Hittable
+open Camera
 
 
 let gradient nx ny =
@@ -27,22 +28,31 @@ let color (r : Ray) (world : IHittable) =
         Vector3.Lerp (Vector3 (1.0f, 1.0f, 1.0f), Vector3 (0.5f, 0.7f, 1.0f), t)
 
 
-let simpleCamera nx ny origin =
-    let lowerLeft = Vector3 (-2.0f, -1.0f, -1.0f)
-    let horizontal = Vector3 (4.0f, 0.0f, 0.0f)
-    let vertical = Vector3 (0.0f, 2.0f, 0.0f)
+let simpleCamera nx ny samples =
+    let camera = Camera.Default
 
     let world =
         { list =
             [ Sphere.Make (Vector3 (0.f, 0.f, -1.f)) 0.5f
               Sphere.Make (Vector3 (0.f, -30.5f, -1.f)) 30.0f ] }
 
+    let random = new Random()
+
+    let rand () =
+        random.NextDouble () |> float32
+
     seq {
         for x, y in Render.pixels nx ny do
-            let u = float32 x / float32 nx
-            let v = float32 y / float32 ny
-            let r = Ray.make origin (lowerLeft + u * horizontal + v * vertical)
-            let color = color r world |> Render.vec3ToColor
+            let col =
+                seq { 1 .. samples }
+                |> Seq.fold (fun col _ ->
+                    let u = (float32 x + rand ()) / float32 nx
+                    let v = (float32 y + rand ()) / float32 ny
+                    let r = Camera.getRay camera u v
+                    col + color r world
+                ) Vector3.Zero
+            let col = col / float32 samples
+            let color = Render.vec3ToColor col
             yield (x, ny - 1 - y, color)
     }
 
@@ -52,42 +62,16 @@ let simpleCamera nx ny origin =
 let main _ =
     Application.EnableVisualStyles ()
 
-    let nx, ny = 800, 400
+    let nx, ny = 1600, 800
 
     use form = new Form (Width = nx, Height = ny, Text = "Eyedazzler")
 
     use img = new Bitmap (nx, ny)
 
-    let origin = ref (Vector3 (0.f, 0.f, 0.f))
-
-    let refresh newOrigin =
-        simpleCamera nx ny newOrigin |> Seq.iter img.SetPixel
-        origin := newOrigin
-        form.Refresh ()
-
-    refresh !origin
+    simpleCamera nx ny 50 |> Seq.iter img.SetPixel
 
     form.Paint.Add (fun e ->
         e.Graphics.DrawImage (img, 0, 0)
-    )
-
-    form.KeyDown.Add (fun e ->
-        let o = !origin
-        match e.KeyCode with
-        | Keys.W ->
-            Some <| Vector3 (o.X, o.Y, o.Z - 0.1f)
-        | Keys.S ->
-            Some <| Vector3 (o.X, o.Y, o.Z + 0.1f)
-        | Keys.A ->
-            Some <| Vector3 (o.X - 0.1f, o.Y, o.Z)
-        | Keys.D ->
-            Some <| Vector3 (o.X + 0.1f, o.Y, o.Z)
-        | Keys.ControlKey ->
-            Some <| Vector3 (o.X, o.Y - 0.1f, o.Z)
-        | Keys.Space ->
-            Some <| Vector3 (o.X, o.Y + 0.1f, o.Z)
-        | _ -> None
-        |> Option.iter refresh
     )
 
     Application.Run form
