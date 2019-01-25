@@ -9,9 +9,8 @@ type Ray =
 module Ray =
     /// Make ray with unit length direction
     let make origin (direction : Vector3) =
-        let unitDir = direction / direction.Length ()
         { origin = origin
-          direction = unitDir }
+          direction = Vector3.Normalize direction }
 
     /// Get the point at position <c>t</c> along the ray
     let pointAt (t : float32) ray =

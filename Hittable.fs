@@ -10,6 +10,5 @@ type HitRecord =
 
 type IHittable =
     abstract member Hits : Ray
-        -> tMin:float32
-        -> tMax:float32
+        -> (float32 * float32)
         -> HitRecord option
