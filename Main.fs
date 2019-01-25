@@ -4,6 +4,8 @@ open System.Drawing
 open System.Windows.Forms
 
 open Ray
+open Sphere
+open Hittable
 
 
 let gradient nx ny =
@@ -16,25 +18,10 @@ let gradient nx ny =
     }
 
 
-let hitSphere (center : Vector3) (radius : float32) (ray : Ray) =
-    let oc = ray.origin - center
-    let a = Vector3.Dot (ray.direction, ray.direction)
-    let b = 2.f * Vector3.Dot (oc, ray.direction)
-    let c = Vector3.Dot (oc, oc) - radius * radius
-    let discriminant = b * b - 4.f * a * c
-    if discriminant < 0.f then
-        None
-    else
-        Some ((-b - sqrt discriminant) / (2.f * a))
-
-
-let color (r : Ray) =
-    let origin = Vector3 (0.f, 0.f, -1.f)
-    let radius = 0.5f
-    match hitSphere origin radius r with
+let color (r : Ray) (world : IHittable) =
+    match Hittable.hits world r 0.f Single.MaxValue with
     | Some hit ->
-        let n = Vector3.Normalize ((Ray.pointAt hit r) - origin)
-        radius * Vector3 (n.X + 1.f, n.Y + 1.f, n.Z + 1.f)
+        0.5f * Vector3 (hit.normal.X + 1.f, hit.normal.Y + 1.f, hit.normal.Z + 1.f)
     | None ->
         let t = 0.5f * (r.direction.Y + 1.0f)   // scale Y to 0..1
         Vector3.Lerp (Vector3 (1.0f, 1.0f, 1.0f), Vector3 (0.5f, 0.7f, 1.0f), t)
@@ -45,12 +32,17 @@ let simpleCamera nx ny origin =
     let horizontal = Vector3 (4.0f, 0.0f, 0.0f)
     let vertical = Vector3 (0.0f, 2.0f, 0.0f)
 
+    let world =
+        { list =
+            [ Sphere.Make (Vector3 (0.f, 0.f, -1.f)) 0.5f
+              Sphere.Make (Vector3 (0.f, -30.5f, -1.f)) 30.0f ] }
+
     seq {
         for x, y in Render.pixels nx ny do
             let u = float32 x / float32 nx
             let v = float32 y / float32 ny
             let r = Ray.make origin (lowerLeft + u * horizontal + v * vertical)
-            let color = color r |> Render.vec3ToColor
+            let color = color r world |> Render.vec3ToColor
             yield (x, ny - 1 - y, color)
     }
 
