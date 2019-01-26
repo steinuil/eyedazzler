@@ -10,6 +10,7 @@
     <Compile Include="Hittable.fs" />
     <Compile Include="Sphere.fs" />
     <Compile Include="Camera.fs" />
+    <Compile Include="Tracer.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

@@ -2,9 +2,11 @@ namespace Ray
 
 open System.Numerics
 
+
 type Ray =
     { origin : Vector3
       direction : Vector3 }
+
 
 module Ray =
     /// Make ray with unit length direction

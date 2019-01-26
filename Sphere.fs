@@ -21,14 +21,14 @@ type Sphere =
             let discriminant = b * b - a * c
             if discriminant <= 0.f then None else
             let temp =
-                let t = (-b - sqrt discriminant)
+                let t = (-b - sqrt discriminant) / a
                 if t > tMin && t < tMax then Some t else
-                let t = (-b + sqrt discriminant)
+                let t = (-b + sqrt discriminant) / a
                 if t > tMin && t < tMax then Some t else
                 None
             temp |> Option.map (fun temp ->
                 let p = Ray.pointAt temp ray
                 { t = temp
                   p = p
-                  normal = Vector3.Normalize <| (p - sphere.center) / sphere.radius }
+                  normal = (p - sphere.center) / sphere.radius }
             )
