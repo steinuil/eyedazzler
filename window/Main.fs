@@ -19,7 +19,7 @@ let main _ =
     box.Size <- new Size (nx, ny)
 
     use img = new Bitmap (nx, ny)
-    Tracer.simpleCamera nx ny 100 |> Seq.iter img.SetPixel
+    Tracer.simpleCamera nx ny 200 |> Seq.iter img.SetPixel
 
     box.Image <- img
     form.Controls.Add box

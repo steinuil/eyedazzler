@@ -1,16 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Winexe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="Render.fs" />
-    <Compile Include="Vec2.fs" />
     <Compile Include="Ray.fs" />
     <Compile Include="Hittable.fs" />
     <Compile Include="Sphere.fs" />
     <Compile Include="Camera.fs" />
+    <Compile Include="Render.fs" />
     <Compile Include="Tracer.fs" />
-    <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

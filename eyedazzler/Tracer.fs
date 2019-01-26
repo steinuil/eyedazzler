@@ -26,7 +26,7 @@ let rand =
 
 let randomInUnitSphere () =
     seq { while true do yield (2.f * Vector3 (rand (), rand (), rand ()) - Vector3 (1.f, 1.f, 1.f)) }
-    |> Seq.find (fun p -> p.LengthSquared () >= 1.f)
+    |> Seq.find (fun p -> p.LengthSquared () < 1.f)
 
 
 let rec color (r : Ray) (world : IHittable) =
